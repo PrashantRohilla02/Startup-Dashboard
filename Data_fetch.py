@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 import streamlit as st 
@@ -95,39 +96,26 @@ def comp_info(startup_name):
 def location(startup_name):
     startup_loc = startup[startup['Startup Name'] == startup_name]
     st_city =startup_loc["City"].value_counts()
-    return st.write(st_city.index)
+    for value in st_city.index:
+         st.write(value)
 
 # api Calling to get information of startup
 def Info(startup_name):
     from dotenv import load_dotenv
-    import os
-    from huggingface_hub import InferenceClient
-
+    from google import genai
+    
     load_dotenv()
-    api_key = os.getenv("HF_API_KEY")
+    api_key = os.getenv("API_KEY")
+
     if not api_key:
-        return "HF_API_KEY not found in environment. Please check your .env file."
+        return "GEMINI_API_KEY not found in environment. Please check your .env file."
 
-    client = InferenceClient(
-        provider="nebius",
-        api_key=api_key,
-    )
-
+    client = genai.Client(api_key=api_key)
     try:
-        completion = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
-            messages=[
-                {
-                    "role": "user",
-                    "content": f"tell me about {startup_name} in simple summary just paragraph with a table contains there founder names and some important info"
-                }
-            ],
+        response = client.models.generate_content(
+            model="gemini-3-flash-preview", contents=f"tell about {startup_name} its founder and anyhting as its introduction"
         )
-        # Check if response is valid
-        if completion and completion.choices and completion.choices[0].message and completion.choices[0].message.content:
-            return completion.choices[0].message.content
-        else:
-            return "No response from API or response is empty."
+        return response.text
     except Exception as e:
         return f"Error: {str(e)}"
 
@@ -140,17 +128,11 @@ def top_performer():
     st.dataframe(tp[["Startup Name","Industry Vertical","Investement Type","Amount in USD"]])
 
 
-
-
-
-
-
-
 # to fetch investor details
 def load_investor_data(investor_name):
     st.subheader("Recent Investements")
     Recent_investements = startup[startup["Investors Name"].str.contains(investor_name)]
-    Recent_investements[["Date","Industry Vertical","City","Investement Type","Amount in USD"]]
+    Recent_investements = Recent_investements[["Date","Industry Vertical","City","Investement Type","Amount in USD"]]
     st.dataframe(Recent_investements.head(5))
 
 # to fetch biggest investement of each investor
@@ -168,8 +150,8 @@ def biggest_investement(investor_name):
         st.subheader("Graph of investement")
         fig, ax = plt.subplots()
         ax.bar(top.index,top.values)
-
         st.pyplot(fig)
+        
     with col2:
         st.subheader("Most Amount Invested in each Sector")
         invested_verticle = startup[startup["Investors Name"].str.contains(investor_name)].groupby("Industry Vertical")["Amount in USD"].sum().reset_index()

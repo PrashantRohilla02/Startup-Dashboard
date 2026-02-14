@@ -5,6 +5,7 @@ A comprehensive Streamlit-based dashboard for analyzing startup funding data wit
 ## Features
 
 ### Overall Analysis
+
 - **Total Investment Amount** - Sum of all investments
 - **Maximum Funding** - Highest single investment amount across startups
 - **Average Funding** - Average investment per startup
@@ -15,11 +16,13 @@ A comprehensive Streamlit-based dashboard for analyzing startup funding data wit
 - **Top Performers** - See which startups performed best in each year
 
 ### Startup Analysis
+
 - **Startup Details** - Get AI-powered summaries of startups using Hugging Face API
 - **Industry Vertical Classification** - View industry and sub-vertical categories
 - **Location Information** - See where the startup operates
 
 ### Investor Analysis
+
 - **Recent Investments** - Track the latest investments by an investor
 - **Biggest Investments** - Identify which startups received the most funding from an investor
 - **Investment Distribution** - Visualize investments across different industry sectors
@@ -33,37 +36,42 @@ A comprehensive Streamlit-based dashboard for analyzing startup funding data wit
 - **NumPy** - Numerical computing
 - **Plotly** - Interactive visualizations
 - **Matplotlib** - Static plots
-- **Hugging Face Hub** - API integration for AI-powered summaries
+- **Google Gemini API** - AI-powered summaries
 
 ## Installation
 
 ### Prerequisites
+
 - Python 3.7 or higher
 - pip (Python package manager)
 
 ### Setup
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/PrashantRohilla02/Startup-Dashboard.git
 cd Startup-Funding_strm
 ```
 
 2. Install required dependencies:
+
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Create a `.env` file in the project root directory and add your Hugging Face API key:
+3. Create a `.env` file in the project root directory and add your Google Gemini API key:
+
 ```
-HF_API_KEY=your_hugging_face_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-To get your Hugging Face API key, visit [Hugging Face Settings](https://huggingface.co/settings/tokens)
+To get your Gemini API key, visit [Google AI Studio](https://makersuite.google.com/app/apikey)
 
 ## Usage
 
 Run the Streamlit application:
+
 ```bash
 streamlit run startup.py
 ```
@@ -94,13 +102,17 @@ Startup-Funding_strm/
 ## Key Files
 
 ### `startup.py`
+
 Main application file that sets up the Streamlit interface with three analysis sections:
+
 - Overall analysis dashboard
 - Startup information page
 - Investor information page
 
 ### `Data_fetch.py`
+
 Contains all data processing and analysis functions including:
+
 - Data loading and preprocessing
 - Aggregate calculations (total, max, average)
 - Time-series analysis (YoY, MoM)
@@ -110,6 +122,7 @@ Contains all data processing and analysis functions including:
 ## Data Format
 
 The CSV files should contain the following columns:
+
 - `Startup Name` - Name of the startup
 - `Date` - Investment date
 - `Amount in USD` - Investment amount
@@ -122,14 +135,18 @@ The CSV files should contain the following columns:
 ## Features in Detail
 
 ### Number Formatting
+
 Large numbers are automatically formatted for readability:
+
 - Billions, Millions, Thousands
 
 ### Interactive Filters
+
 - Year selection for MoM analysis
 - Dynamic dropdown selections for startups and investors
 
 ### Data Visualizations
+
 - Bar charts for YoY trends
 - Pie charts for sector distribution
 - Data tables for detailed information
@@ -138,6 +155,7 @@ Large numbers are automatically formatted for readability:
 ## Requirements
 
 See `requirements.txt` for complete dependencies:
+
 - streamlit
 - pandas
 - numpy
@@ -145,14 +163,15 @@ See `requirements.txt` for complete dependencies:
 - plotly
 - requests
 - python-dotenv
-- huggingface-hub
+- google-generativeai
 
 ## Configuration
 
 The application uses environment variables for sensitive information:
-- `HF_API_KEY` - Required for AI-powered startup summaries
 
-Create a `.env` file in the project root and add your API key.
+- `GEMINI_API_KEY` - Required for AI-powered startup summaries
+
+Create a `.env` file in the project root and add your Gemini API key.
 
 ## Notes
 
