@@ -4,16 +4,21 @@ A Streamlit-powered interactive dashboard designed to explore startup funding tr
 
 ## Core Features
 
-- **Market Overview:** Analyze total funding, average funding per startup, record-high funding rounds, and track trends across years and specific months.
-- **Top Leaderboards:** Identify the most active investors, highest-funded startups, and the top funding rounds annually.
-- **Startup Intelligence:** View a startup's industry vertical, sub-vertical, location, and an AI-generated introductory summary.
-- **Investor Portfolios:** Track an investor's recent investments, their largest single investment, sector distribution, and year-over-year investment totals.
+- **Overall analysis:** total funding, average funding per startup, largest
+  startup funding total, yearly trends, and monthly trends for a selected year.
+- **Top lists:** leading investors, funded startups, and yearly top funding
+  rounds.
+- **Startup lookup:** view industry and sub-industry information, city, and an
+  AI-generated introduction.
+- **Investor lookup:** view recent investments, the largest investment, sector
+  distribution, and yearly investment totals.
 
-## Prerequisites
+## Requirements
 
 - Python installed on your machine.
-- Dependencies listed in [`requirements.txt`](requirements.txt).
-- **Google Gemini API Key:** Required only for the AI-generated startup summaries. All other dashboard features function normally without it.
+- Packages listed in [`requirements.txt`](requirements.txt).
+- A Google Gemini API key to use AI-generated startup summaries. The rest of
+  the dashboard does not require this feature.
 
 ## Installation & Setup
 
@@ -38,7 +43,9 @@ To enable AI-generated startup summaries, create a `.env` file in the root direc
 GOOGLE_API_KEY=your_google_gemini_api_key
 ```
 
-_Keep this key secure. Ensure `.env` is not committed to version control._
+The application loads this file when requesting a startup summary. Keep the
+key private; do not commit `.env` to version control. You can obtain a key from
+[Google AI Studio](https://aistudio.google.com/app/apikey).
 
 ## Running the Dashboard
 
@@ -52,9 +59,9 @@ Navigate to the local URL provided in the terminal (typically `http://localhost:
 
 ## Dataset Requirements
 
-The application automatically loads the dataset from `Dataset/startup_funding_cleaned2.csv` upon importing [`Data_fetch.py`](Data_fetch.py). The script drops rows with missing values and parses the `Date` column to extract yearly and monthly data.
-
-Ensure your CSV file remains at this exact path and includes the following column headers:
+The application reads `Dataset/startup_funding_cleaned2.csv` when
+[`Data_fetch.py`](Data_fetch.py) is imported. Keep this file at that path. The
+analysis uses columns including:
 
 - `Startup Name`
 - `Date`
@@ -65,7 +72,10 @@ Ensure your CSV file remains at this exact path and includes the following colum
 - `City`
 - `Investement Type`
 
-## Project Structure
+The dashboard drops rows containing missing values and parses `Date` to derive
+year and month values. Ensure the CSV's column names match the names above.
+
+## Project files
 
 ```text
 .
