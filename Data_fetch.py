@@ -2,11 +2,17 @@ import os
 import pandas as pd
 import numpy as np
 import streamlit as st 
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+    _MATPLOTLIB_AVAILABLE = True
+except Exception:
+    _MATPLOTLIB_AVAILABLE = False
 import plotly.express as px
 import requests
+from langchain_google_genai import ChatGoogleGenerativeAI
 
-startup = pd.read_csv('Dataset\startup_funding_cleaned2.csv')
+
+startup = pd.read_csv('Dataset/startup_funding_cleaned2.csv')
 startup.dropna(inplace=True)
 
 
@@ -64,12 +70,12 @@ def yoy_invested():
 
 
 def top_investors():
-    st.subheader("Top Investors")
+    st.subheader("Top 5 Investors")
     top = startup.groupby("Investors Name")["Amount in USD"].sum().sort_values(ascending=False).head(10).reset_index()
     st.dataframe(top.head(5))
 
 def top_startups():
-    st.subheader("Top Startups by Funding")
+    st.subheader("Top 5 Startups which got highest Funding")
     top_stat = startup.groupby("Startup Name")["Amount in USD"].sum().sort_values(ascending=False).head(10).reset_index()
     st.dataframe(top_stat.head(5))
 
@@ -102,20 +108,13 @@ def location(startup_name):
 # api Calling to get information of startup
 def Info(startup_name):
     from dotenv import load_dotenv
-    from google import genai
-    
     load_dotenv()
-    api_key = os.getenv("API_KEY")
-
-    if not api_key:
-        return "GEMINI_API_KEY not found in environment. Please check your .env file."
-
-    client = genai.Client(api_key=api_key)
     try:
-        response = client.models.generate_content(
-            model="gemini-3-flash-preview", contents=f"tell about {startup_name} its founder and anyhting as its introduction"
+        response = ChatGoogleGenerativeAI(
+            model="gemini-3-flash-preview"
+            
         )
-        return response.text
+        return response.invoke(f"tell about {startup_name} its founder and anyhting as its introduction").content[0]["text"]
     except Exception as e:
         return f"Error: {str(e)}"
 
