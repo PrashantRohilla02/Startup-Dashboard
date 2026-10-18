@@ -1,31 +1,23 @@
 # Startup Funding Analysis Dashboard
 
-A Streamlit dashboard for exploring startup funding and investor activity in the
-included dataset. It provides summary metrics, interactive charts, and details
-about selected startups and investors. Startup summaries can also be requested
-from Google Gemini.
+A Streamlit-powered interactive dashboard designed to explore startup funding trends and investor activity. It offers comprehensive summary metrics, interactive visualizations, and detailed profiles for specific startups and investors, enhanced with AI-generated insights via Google Gemini.
 
-## Features
+## Core Features
 
-- **Overall analysis:** total funding, average funding per startup, largest
-  startup funding total, yearly trends, and monthly trends for a selected year.
-- **Top lists:** leading investors, funded startups, and yearly top funding
-  rounds.
-- **Startup lookup:** view industry and sub-industry information, city, and an
-  AI-generated introduction.
-- **Investor lookup:** view recent investments, the largest investment, sector
-  distribution, and yearly investment totals.
+- **Market Overview:** Analyze total funding, average funding per startup, record-high funding rounds, and track trends across years and specific months.
+- **Top Leaderboards:** Identify the most active investors, highest-funded startups, and the top funding rounds annually.
+- **Startup Intelligence:** View a startup's industry vertical, sub-vertical, location, and an AI-generated introductory summary.
+- **Investor Portfolios:** Track an investor's recent investments, their largest single investment, sector distribution, and year-over-year investment totals.
 
-## Requirements
+## Prerequisites
 
 - Python installed on your machine.
-- Packages listed in [`requirements.txt`](requirements.txt).
-- A Google Gemini API key to use AI-generated startup summaries. The rest of
-  the dashboard does not require this feature.
+- Dependencies listed in [`requirements.txt`](requirements.txt).
+- **Google Gemini API Key:** Required only for the AI-generated startup summaries. All other dashboard features function normally without it.
 
-## Setup
+## Installation & Setup
 
-Open a terminal in the project directory and create a virtual environment:
+Open a terminal in the project root directory and create a virtual environment:
 
 ```powershell
 python -m venv .venv
@@ -33,45 +25,36 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-If PowerShell prevents activating the environment, you can invoke its Python
-directly instead:
+> **Note for Windows Users:** If PowerShell execution policies prevent activation, you can invoke the virtual environment's Python executable directly to install packages:
+> `.\.venv\Scripts\python.exe -m pip install -r requirements.txt`
 
-```powershell
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-```
+If you are using **VS Code**, select the `.venv` Python interpreter for this workspace so the editor correctly resolves your installed dependencies.
 
-In VS Code, select the `.venv` Python interpreter for this workspace so the
-editor and the application use the same installed packages.
+## Configuration
 
-## Configure Gemini
-
-Create a `.env` file in the project root and add your API key:
+To enable AI-generated startup summaries, create a `.env` file in the root directory and add your Google Gemini API key (obtainable from [Google AI Studio](https://aistudio.google.com/app/apikey)):
 
 ```dotenv
 GOOGLE_API_KEY=your_google_gemini_api_key
 ```
 
-The application loads this file when requesting a startup summary. Keep the
-key private; do not commit `.env` to version control. You can obtain a key from
-[Google AI Studio](https://aistudio.google.com/app/apikey).
+_Keep this key secure. Ensure `.env` is not committed to version control._
 
-## Run the dashboard
+## Running the Dashboard
 
-From the project root, start Streamlit:
+Launch the Streamlit application from the project root:
 
 ```powershell
 python -m streamlit run startup.py
 ```
 
-Open the local URL printed by Streamlit (usually
-`http://localhost:8501`). Use the sidebar to switch among **Overall**,
-**About Startup**, and **About Investors**.
+Navigate to the local URL provided in the terminal (typically `http://localhost:8501`). Use the sidebar menu to toggle between the **Overall**, **About Startup**, and **About Investors** views.
 
-## Dataset
+## Dataset Requirements
 
-The application reads `Dataset/startup_funding_cleaned2.csv` when
-[`Data_fetch.py`](Data_fetch.py) is imported. Keep this file at that path. The
-analysis uses columns including:
+The application automatically loads the dataset from `Dataset/startup_funding_cleaned2.csv` upon importing [`Data_fetch.py`](Data_fetch.py). The script drops rows with missing values and parses the `Date` column to extract yearly and monthly data.
+
+Ensure your CSV file remains at this exact path and includes the following column headers:
 
 - `Startup Name`
 - `Date`
@@ -82,24 +65,15 @@ analysis uses columns including:
 - `City`
 - `Investement Type`
 
-The dashboard drops rows containing missing values and parses `Date` to derive
-year and month values. Ensure the CSV's column names match the names above.
-
-## Project files
+## Project Structure
 
 ```text
 .
-├── Data_fetch.py
-├── startup.py
-├── requirements.txt
+├── Data_fetch.py       # Handles CSV data processing, aggregations, visualizations, and Gemini API requests
+├── startup.py          # Main Streamlit interface and sidebar routing logic
+├── requirements.txt    # Project dependencies
 └── Dataset/
     ├── startup_funding.csv
     ├── startup_funding_cleaned.csv
-    └── startup_funding_cleaned2.csv
+    └── startup_funding_cleaned2.csv  # Primary dataset used by the application
 ```
-
-- [`startup.py`](startup.py) builds the Streamlit interface and connects the
-  sidebar selections to the analysis functions.
-- [`Data_fetch.py`](Data_fetch.py) loads and processes the CSV, computes
-  summary data, renders visualizations, and requests Gemini summaries.
-- [`requirements.txt`](requirements.txt) lists the Python dependencies.
