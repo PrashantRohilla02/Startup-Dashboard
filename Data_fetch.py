@@ -60,7 +60,7 @@ def avg_amount():
 
 def yoy_invested():
     yoy = startup.groupby("year")["Amount in USD"].sum().reset_index()
-    fig = px.bar(yoy,x='year',y='Amount in USD')
+    fig = px.bar(yoy,x='year',y='Amount in USD',color="Amount in USD",color_continuous_scale="magenta")
     # fig, ax = plt.subplots()
     # ax.bar(yoy.index,yoy.values)
     # ax.set_title("YOY - Investement")
@@ -72,12 +72,34 @@ def yoy_invested():
 def top_investors():
     st.subheader("Top 5 Investors")
     top = startup.groupby("Investors Name")["Amount in USD"].sum().sort_values(ascending=False).head(10).reset_index()
-    st.dataframe(top.head(5))
+    st.dataframe(top,
+        column_config={
+            "Investors Name": "Investor",
+            "Amount in USD": st.column_config.ProgressColumn(
+                "Funding Amount (USD)",
+                format="%d",
+                min_value=0,
+                max_value=int(top["Amount in USD"].head(5).max()),
+            ),
+        },
+        hide_index=True,
+        use_container_width=True)
 
 def top_startups():
     st.subheader("Top 5 Startups which got highest Funding")
     top_stat = startup.groupby("Startup Name")["Amount in USD"].sum().sort_values(ascending=False).head(10).reset_index()
-    st.dataframe(top_stat.head(5))
+    st.dataframe(top_stat,
+        column_config={
+            "Startup Name": "Startup",
+            "Amount in USD": st.column_config.ProgressColumn(
+                "Funding Received (USD)",
+                format="$%d",
+                min_value=0,
+                max_value=int(top_stat["Amount in USD"].max()),
+            ),
+        },
+        hide_index=True,
+        use_container_width=True)
 
 def MoM_investement():
     years = startup["year"].unique().tolist()
@@ -85,7 +107,7 @@ def MoM_investement():
     stt = startup.groupby(["year","month"])["Amount in USD"].sum().reset_index()
 
     stt = stt[stt["year"] == year]
-    fig = px.bar(stt,x="month",y="Amount in USD",width=100,height=382)
+    fig = px.bar(stt,x="month",y="Amount in USD",width=100,height=382,color="Amount in USD",color_continuous_scale="Viridis")
     # fig, ax = plt.subplots()
     # ax.bar(stt["month"],stt["Amount in USD"])
     # ax.set_title("YOY - Investement")
@@ -129,38 +151,110 @@ def top_performer():
 
 # to fetch investor details
 def load_investor_data(investor_name):
-    st.subheader("Recent Investements")
-    Recent_investements = startup[startup["Investors Name"].str.contains(investor_name)]
-    Recent_investements = Recent_investements[["Date","Industry Vertical","City","Investement Type","Amount in USD"]]
-    st.dataframe(Recent_investements.head(5))
+    st.subheader("⏱️ Recent Investments")
+    
+    recent = startup[startup["Investors Name"].str.contains(investor_name, case=False, na=False)]
+    
+    if recent.empty:
+        st.info("No recent investments found.")
+        return
+
+    cols = ["Date", "Industry Vertical", "City", "Investement Type", "Amount in USD"]
+    recent_deals = recent[cols].head(5)
+
+    st.dataframe(
+        recent_deals,
+        column_config={
+            "Date": st.column_config.DateColumn("Date"),
+            "Industry Vertical": st.column_config.TextColumn("Sector / Vertical"),
+            "City": st.column_config.TextColumn("Location"),
+            "Investement Type": st.column_config.TextColumn("Round Type"),
+            "Amount in USD": st.column_config.NumberColumn(
+                "Amount",
+                format="$%d"
+            ),
+        },
+        hide_index=True,
+        use_container_width=True
+    )
 
 # to fetch biggest investement of each investor
-def biggest_investement(investor_name):
-    st.subheader("Biggest Investement")
-    Biggest = startup[startup["Investors Name"].str.contains(investor_name)].groupby("Startup Name")["Amount in USD"].sum().sort_values(ascending=False)
-    top_one = Biggest.index[0]
-    most_invested = startup[startup["Startup Name"] == top_one]
-    top = Biggest.head(5) # to reduce conjustion it shows only five values
-    st.dataframe(most_invested[["Date","Startup Name","Industry Vertical","Investement Type","Amount in USD"]].head(1))
+def biggest_investment(investor_name):
 
-    # with graph also
-    col,col2 = st.columns(2)
-    with col:
-        st.subheader("Graph of investement")
-        fig, ax = plt.subplots()
-        ax.bar(top.index,top.values)
-        st.pyplot(fig)
-        
+   
+
+    # Safe filtering with case-insensitive search and null checks
+    investor_df = startup[startup["Investors Name"].str.contains(investor_name, case=False, na=False)]
+
+    if investor_df.empty:
+        st.warning(f"No investment record found for '{investor_name}'.")
+        return
+
+    # 1. TOP INVESTMENT HIGHLIGHT (Replaces single-row DataFrame with Metric Cards)
+    biggest = investor_df.groupby("Startup Name")["Amount in USD"].sum().sort_values(ascending=False)
+    top_one_name = biggest.index[0]
+    top_deal = investor_df[investor_df["Startup Name"] == top_one_name].iloc[0]
+
+    st.markdown("#### 🏆 Single Largest Investment Deal")
+    kpi1, kpi2, kpi3, kpi4 = st.columns(4)
+    with kpi1:
+        st.metric(label="Startup Name", value=str(top_deal["Startup Name"]))
+    with kpi2:
+        st.metric(label="Funding Amount", value=format_number(top_deal["Amount in USD"]))
+    with kpi3:
+        st.metric(label="Industry Vertical", value=str(top_deal.get("Industry Vertical", "N/A")))
+    with kpi4:
+        st.metric(label="Investment Type", value=str(top_deal.get("Investment Type", "N/A")))
+
+    st.markdown("---")
+
+    # 2. VISUAL CHARTS GRID
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("Top 5 Investments")
+        top_5 = biggest.head(5).reset_index()
+
+        # Horizontal bar chart prevents label overlaps on long startup names
+        fig_bar = px.bar(
+            top_5,
+            x="Amount in USD",
+            y="Startup Name",
+            orientation="h",
+            text=top_5["Amount in USD"].apply(format_number),
+            color="Amount in USD",
+            color_continuous_scale="Blues"
+        )
+        fig_bar.update_traces(textposition="outside")
+        fig_bar.update_layout(
+            yaxis={"categoryorder": "total ascending"},
+            showlegend=False,
+            xaxis_title="Investment ($)",
+            yaxis_title="",
+            height=320,
+            margin=dict(l=0, r=10, t=10, b=10)
+        )
+        st.plotly_chart(fig_bar, use_container_width=True)
+
     with col2:
-        st.subheader("Most Amount Invested in each Sector")
-        invested_verticle = startup[startup["Investors Name"].str.contains(investor_name)].groupby("Industry Vertical")["Amount in USD"].sum().reset_index()
-        fig = px.pie(invested_verticle,values="Amount in USD",names="Industry Vertical")
-        # fig, ax = plt.subplots()
-        # ax.pie(invested_verticle,labels=invested_verticle.index)
+        st.subheader("Sector Allocation")
+        invested_vertical = investor_df.groupby("Industry Vertical")["Amount in USD"].sum().reset_index()
 
-        # st.pyplot(fig)
-        st.plotly_chart(fig)
-
+        # Modern Donut chart instead of default pie chart
+        fig_donut = px.pie(
+            invested_vertical,
+            values="Amount in USD",
+            names="Industry Vertical",
+            hole=0.45,
+            color_discrete_sequence=px.colors.qualitative.Set3
+        )
+        fig_donut.update_traces(textinfo="percent+label")
+        fig_donut.update_layout(
+            showlegend=False,
+            height=320,
+            margin=dict(l=0, r=0, t=10, b=10)
+        )
+        st.plotly_chart(fig_donut, use_container_width=True)
 startup.info()
 
 def yoy_investements(investor_name):
@@ -169,7 +263,7 @@ def yoy_investements(investor_name):
             st.subheader("YoY Investment")
             yoy = startup[startup["Investors Name"].str.contains(investor_name)].groupby("year")["Amount in USD"].sum().reset_index()
             
-            fig = px.bar(yoy,x="year",y="Amount in USD")
+            fig = px.bar(yoy,x="year",y="Amount in USD",color="Amount in USD",color_continuous_scale="magenta")
             st.plotly_chart(fig)
             
 

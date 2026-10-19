@@ -50,6 +50,6 @@ elif option == "About Investors":
 
     if btn2:
        Data_fetch.load_investor_data(investor_name)
-       Data_fetch.biggest_investement(investor_name)
+       Data_fetch.biggest_investment(investor_name)
        Data_fetch.yoy_investements(investor_name)
        
