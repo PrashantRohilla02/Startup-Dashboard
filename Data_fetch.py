@@ -83,7 +83,7 @@ def top_investors():
             ),
         },
         hide_index=True,
-        use_container_width=True)
+        width="stretch")
 
 def top_startups():
     st.subheader("Top 5 Startups which got highest Funding")
@@ -118,14 +118,32 @@ def MoM_investement():
 
 # fetching the information of each comapnies
 def comp_info(startup_name):
-    startup_details = startup[startup['Startup Name'] == startup_name]
-    st.dataframe(startup_details[["Industry Vertical","SubVertical"]])
+    df = startup[startup['Startup Name'] == startup_name]
+    
+    if df.empty:
+        st.info("No startup details available.")
+        return
+
+    vertical = ", ".join(df["Industry Vertical"].dropna().unique()) or "N/A"
+    subvertical = ", ".join(df["SubVertical"].dropna().unique()) or "N/A"
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric(label="Industry Vertical", value=vertical)
+    with col2:
+        st.metric(label="Sub-Vertical", value=subvertical)
 
 def location(startup_name):
-    startup_loc = startup[startup['Startup Name'] == startup_name]
-    st_city =startup_loc["City"].value_counts()
-    for value in st_city.index:
-         st.write(value)
+    df = startup[startup['Startup Name'] == startup_name]
+    cities = df["City"].dropna().unique().tolist()
+    
+    if not cities:
+        st.info("Location details unavailable.")
+        return
+
+    st.markdown("**Company Location(s):**")
+    # Native pill badges
+    st.pills(label="Locations", options=cities, selection_mode="multi", default=cities, disabled=True)
 
 # api Calling to get information of startup
 def Info(startup_name):
