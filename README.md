@@ -17,8 +17,14 @@ Startup Funding Analysis is a Python web application for exploring a startup fun
 Choose a view from the sidebar:
 
 - **Overall** — review aggregate funding metrics, year-over-year and month-by-month trends, and top funding lists.
+  <img width="1917" height="950" alt="image" src="https://github.com/user-attachments/assets/1247fcd5-39e4-4df3-b158-0effaecb9f24" />
+
 - **About Startup** — select a startup to view its industry, subvertical, and location information. You can also request an AI-generated introduction.
 - **About Investors** — select an investor to explore recent investments, largest investments, sector allocation, and yearly investment totals.
+  <img width="1917" height="767" alt="image" src="https://github.com/user-attachments/assets/cae90ee4-67da-4a1e-b840-3273e5f6422c" />
+  ![Uploading image.png…]()
+
+
 
 ## ✨ Key Features
 
