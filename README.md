@@ -1,28 +1,54 @@
-# Startup Funding Analysis Dashboard
+# 📊 Startup Funding Analysis Dashboard
 
-A Streamlit-powered interactive dashboard designed to explore startup funding trends and investor activity. It offers comprehensive summary metrics, interactive visualizations, and detailed profiles for specific startups and investors, enhanced with AI-generated insights via Google Gemini.
+Explore startup funding trends and investor activity through an interactive dashboard built with Streamlit.
 
-## Core Features
+**Analyze funding at a glance, explore individual startups, and discover the investment history of selected investors.**
 
-- **Overall analysis:** total funding, average funding per startup, largest
-  startup funding total, yearly trends, and monthly trends for a selected year.
-- **Top lists:** leading investors, funded startups, and yearly top funding
-  rounds.
-- **Startup lookup:** view industry and sub-industry information, city, and an
-  AI-generated introduction.
-- **Investor lookup:** view recent investments, the largest investment, sector
-  distribution, and yearly investment totals.
+![Python](https://img.shields.io/badge/Python-3-blue?logo=python&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-dashboard-FF4B4B?logo=streamlit&logoColor=white)
+![Plotly](https://img.shields.io/badge/Charts-Plotly-3F4F75?logo=plotly&logoColor=white)
 
-## Requirements
+---
 
-- Python installed on your machine.
-- Packages listed in [`requirements.txt`](requirements.txt).
-- A Google Gemini API key to use AI-generated startup summaries. The rest of
-  the dashboard does not require this feature.
+## 📌 Overview
 
-## Installation & Setup
+Startup Funding Analysis is a Python web application for exploring a startup funding dataset. Its dashboard brings together summary metrics, funding trends, startup profiles, and investor activity in one place.
 
-Open a terminal in the project root directory and create a virtual environment:
+Choose a view from the sidebar:
+
+- **Overall** — review aggregate funding metrics, year-over-year and month-by-month trends, and top funding lists.
+- **About Startup** — select a startup to view its industry, subvertical, and location information. You can also request an AI-generated introduction.
+- **About Investors** — select an investor to explore recent investments, largest investments, sector allocation, and yearly investment totals.
+
+## ✨ Key Features
+
+| Feature                 | Description                                                                                                                   |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Funding summary         | Displays total funding, the highest total funding for a startup, and average total funding per startup.                       |
+| Funding trends          | Visualizes annual funding totals and monthly funding totals for a selected year.                                              |
+| Top funding lists       | Shows leading investors, startups by total funding, and top funding rounds for a selected year.                               |
+| Startup lookup          | Displays a startup's industry vertical, subvertical, and recorded city or cities.                                             |
+| AI startup introduction | Optionally requests a startup introduction using Google Gemini.                                                               |
+| Investor lookup         | Shows recent deals, the investor's largest startup investment, top investments, sector allocation, and year-over-year totals. |
+
+## 🧰 Technology
+
+- **Python** — application language
+- **Streamlit** — interactive web interface
+- **Pandas** and **NumPy** — data loading and analysis
+- **Plotly Express** — interactive charts
+- **LangChain Google GenAI** — optional Gemini-powered startup introductions
+
+## 🚀 Getting Started
+
+### Requirements
+
+- Python installed on your machine
+- Dependencies listed in [`requirements.txt`](requirements.txt)
+
+### Installation
+
+From the project root, create and activate a virtual environment, then install the dependencies:
 
 ```powershell
 python -m venv .venv
@@ -30,60 +56,58 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-> **Note for Windows Users:** If PowerShell execution policies prevent activation, you can invoke the virtual environment's Python executable directly to install packages:
-> `.\.venv\Scripts\python.exe -m pip install -r requirements.txt`
+If PowerShell blocks environment activation, install using the environment's Python directly:
 
-If you are using **VS Code**, select the `.venv` Python interpreter for this workspace so the editor correctly resolves your installed dependencies.
-
-## Configuration
-
-To enable AI-generated startup summaries, create a `.env` file in the root directory and add your Google Gemini API key (obtainable from [Google AI Studio](https://aistudio.google.com/app/apikey)):
-
-```dotenv
-GOOGLE_API_KEY=your_google_gemini_api_key
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-The application loads this file when requesting a startup summary. Keep the
-key private; do not commit `.env` to version control. You can obtain a key from
-[Google AI Studio](https://aistudio.google.com/app/apikey).
-
-## Running the Dashboard
-
-Launch the Streamlit application from the project root:
+### Run the dashboard
 
 ```powershell
 python -m streamlit run startup.py
 ```
 
-Navigate to the local URL provided in the terminal (typically `http://localhost:8501`). Use the sidebar menu to toggle between the **Overall**, **About Startup**, and **About Investors** views.
+Open the local URL printed by Streamlit, typically <http://localhost:8501>.
 
-## Dataset Requirements
+## ⚙️ Optional Gemini Configuration
 
-The application reads `Dataset/startup_funding_cleaned2.csv` when
-[`Data_fetch.py`](Data_fetch.py) is imported. Keep this file at that path. The
-analysis uses columns including:
+The startup lookup can request an AI-generated introduction. To enable it, create a `.env` file in the project root and add your Google AI Studio API key:
 
-- `Startup Name`
-- `Date`
-- `Amount in USD`
-- `Investors Name`
-- `Industry Vertical`
-- `SubVertical`
-- `City`
-- `Investement Type`
+```dotenv
+GOOGLE_API_KEY=your_google_api_key
+```
 
-The dashboard drops rows containing missing values and parses `Date` to derive
-year and month values. Ensure the CSV's column names match the names above.
+The rest of the dashboard works without this optional feature. Keep your API key private and do not commit `.env` to version control.
 
-## Project files
+## 🗃️ Dataset
+
+The app loads [`Dataset/startup_funding_cleaned2.csv`](Dataset/startup_funding_cleaned2.csv) when [`Data_fetch.py`](Data_fetch.py) is imported. The repository also contains the original and intermediate CSV files.
+
+The primary CSV must include these column names:
+
+| Column              | Used for                                               |
+| ------------------- | ------------------------------------------------------ |
+| `Startup Name`      | Startup selection and funding totals                   |
+| `Date`              | Annual and monthly funding trends                      |
+| `Amount in USD`     | Funding metrics and investment charts                  |
+| `Investors Name`    | Investor selection and activity                        |
+| `Industry Vertical` | Startup and investor sector analysis                   |
+| `SubVertical`       | Startup profile details                                |
+| `City`              | Startup location details and recent investment records |
+| `Investement Type`  | Funding round details                                  |
+
+The application drops rows with missing values and parses `Date` to derive year and month values. If you replace the dataset, preserve the expected column names and keep the file at the path above.
+
+## 📁 Project Structure
 
 ```text
 .
-├── Data_fetch.py       # Handles CSV data processing, aggregations, visualizations, and Gemini API requests
-├── startup.py          # Main Streamlit interface and sidebar routing logic
-├── requirements.txt    # Project dependencies
+├── Data_fetch.py                       # Loads data and provides dashboard analyses
+├── startup.py                          # Streamlit app entry point and page routing
+├── requirements.txt                    # Python dependencies
 └── Dataset/
-    ├── startup_funding.csv
-    ├── startup_funding_cleaned.csv
-    └── startup_funding_cleaned2.csv  # Primary dataset used by the application
+    ├── startup_funding.csv             # Original dataset
+    ├── startup_funding_cleaned.csv     # Intermediate cleaned dataset
+    └── startup_funding_cleaned2.csv    # Dataset used by the application
 ```
